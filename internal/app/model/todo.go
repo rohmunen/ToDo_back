@@ -10,11 +10,11 @@ type Todo struct {
 }
 
 type TodoStore interface {
-	Todo(id string) (*Todo, error)
-	Todos(id string) ([]Todo, error)
-	Create(t *Todo) (*Todo, error)
-	Update(t *Todo) error
-	Delete(id string) error
-	TodoPublic(id string) (string, error)
+	Todo(todoId string) (*Todo, error)
+	Todos(userId string) ([]Todo, error)
+	Create(todo *Todo) (*Todo, error)
+	Update(todo *Todo) error
+	Delete(todoId string) error
+	TodoPublic(todoId string) (string, error)
 	TodoPublicGet(link string) (*Todo, error)
 }

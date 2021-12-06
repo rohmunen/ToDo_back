@@ -8,7 +8,7 @@ import (
 	"testmod/internal/app/model"
 	"testmod/internal/app/store"
 	"testmod/pkg/auth"
-	"testmod/pkg/cors"
+	"testmod/pkg/middleware"
 	"testmod/pkg/response"
 
 	"github.com/gorilla/mux"
@@ -18,9 +18,19 @@ var (
 	errIncorrectEmailOrPassword = errors.New("incorrect email or password")
 )
 
+func AddTodoHandlers(router *mux.Router, store *store.Store, auth *auth.Manager) {
+	router.HandleFunc("/api/todo", middleware.SetupCORS(middleware.CheckAuth(HandleTodoCreate(store, auth), auth))).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/todo/{id}", middleware.SetupCORS(middleware.CheckAuth(HandleTodoGet(store), auth))).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/todo/{id}", middleware.SetupCORS(middleware.CheckAuth(HandleTodoDelete(store), auth))).Methods("DELETE", "OPTIONS")
+	router.HandleFunc("/api/todo/{id}", middleware.SetupCORS(middleware.CheckAuth(HandleTodoPut(store), auth))).Methods("PUT", "OPTIONS")
+	router.HandleFunc("/api/todo/{id}", middleware.SetupCORS(middleware.CheckAuth(HandleTodoCreatePublic(store), auth))).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/todos", middleware.SetupCORS(middleware.CheckAuth(HandleTodos(store, auth), auth))).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/todo/public/{link}", middleware.SetupCORS(HandleTodoGetPublic(store))).Methods("GET", "OPTIONS")
+}
+
 func HandleTodoCreatePublic(store *store.Store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cors.SetupCORS(&w, r)
+		//cors.SetupCORS(&w, r)
 		if (*r).Method == "OPTIONS" {
 			return
 		}
@@ -36,7 +46,7 @@ func HandleTodoCreatePublic(store *store.Store) http.HandlerFunc {
 
 func HandleTodoGetPublic(store *store.Store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cors.SetupCORS(&w, r)
+		//cors.SetupCORS(&w, r)
 		if (*r).Method == "OPTIONS" {
 			return
 		}
@@ -57,7 +67,7 @@ func HandleTodoPut(store *store.Store) http.HandlerFunc {
 		Body  string `json:"body"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		cors.SetupCORS(&w, r)
+		//cors.SetupCORS(&w, r)
 		if (*r).Method == "OPTIONS" {
 			return
 		}
@@ -99,7 +109,7 @@ func HandleTodoPut(store *store.Store) http.HandlerFunc {
 
 func HandleTodoDelete(store *store.Store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cors.SetupCORS(&w, r)
+		//cors.SetupCORS(&w, r)
 		if (*r).Method == "OPTIONS" {
 			return
 		}
@@ -111,7 +121,7 @@ func HandleTodoDelete(store *store.Store) http.HandlerFunc {
 
 func HandleTodoGet(store *store.Store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cors.SetupCORS(&w, r)
+		//cors.SetupCORS(&w, r)
 		if (*r).Method == "OPTIONS" {
 			return
 		}
@@ -127,7 +137,7 @@ func HandleTodoGet(store *store.Store) http.HandlerFunc {
 
 func HandleTodos(store *store.Store, auth *auth.Manager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cors.SetupCORS(&w, r)
+		//cors.SetupCORS(&w, r)
 		if (*r).Method == "OPTIONS" {
 			return
 		}
@@ -152,7 +162,7 @@ func HandleTodoCreate(store *store.Store, auth *auth.Manager) http.HandlerFunc {
 		Body  string `json:"body"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		cors.SetupCORS(&w, r)
+		//cors.SetupCORS(&w, r)
 		if (*r).Method == "OPTIONS" {
 			return
 		}

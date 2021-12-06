@@ -9,15 +9,24 @@ import (
 	"testmod/internal/app/model"
 	"testmod/internal/app/store"
 	"testmod/pkg/auth"
-	"testmod/pkg/cors"
+	"testmod/pkg/middleware"
 	"testmod/pkg/response"
 
+	"github.com/gorilla/mux"
 	"golang.org/x/crypto/bcrypt"
 )
 
+func AddAuthenticationHandlers(router *mux.Router, store *store.Store, auth *auth.Manager) {
+	router.HandleFunc("/api/private/auth", middleware.SetupCORS(middleware.CheckAuth(HandleAuth(), auth))).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/login", middleware.SetupCORS(HandleLogin(store, auth))).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/forgot-password", middleware.SetupCORS(middleware.CheckAuth(HandleChangePassword(store, auth), auth))).Methods("PUT", "OPTIONS")
+	router.HandleFunc("/api/recover-password", middleware.SetupCORS(HandlePasswordRecovery(store))).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/validate-password-recovery/", middleware.SetupCORS(HandleValidatePasswordRecovery(store))).Methods("POST", "OPTIONS")
+}
+
 func HandleAuth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cors.SetupCORS(&w, r)
+		//cors.SetupCORS(&w, r)
 		if (*r).Method == "OPTIONS" {
 			return
 		}
@@ -34,7 +43,7 @@ func HandleChangePassword(store *store.Store, auth *auth.Manager) http.HandlerFu
 		Token string `json:"token"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		cors.SetupCORS(&w, r)
+		//cors.SetupCORS(&w, r)
 		if (*r).Method == "OPTIONS" {
 			return
 		}
@@ -70,7 +79,7 @@ func HandlePasswordRecovery(store *store.Store) http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		cors.SetupCORS(&w, r)
+		//cors.SetupCORS(&w, r)
 		if (*r).Method == "OPTIONS" {
 			return
 		}
@@ -85,7 +94,7 @@ func HandlePasswordRecovery(store *store.Store) http.HandlerFunc {
 			response.ErrorFunc(w, r, http.StatusBadRequest, err)
 			return
 		}
-		a := &model.AccountRecovery{
+		a := &model.VerificationRow{
 			Email:      req.Email,
 			Hash:       hash,
 			Expiration: expiration,
@@ -104,7 +113,7 @@ func HandleValidatePasswordRecovery(store *store.Store) http.HandlerFunc {
 		Password string `json:"password"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		cors.SetupCORS(&w, r)
+		//cors.SetupCORS(&w, r)
 		if (*r).Method == "OPTIONS" {
 			return
 		}
@@ -143,7 +152,7 @@ func HandleLogin(store *store.Store, auth *auth.Manager) http.HandlerFunc {
 		Password string `json:"password"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		cors.SetupCORS(&w, r)
+		//cors.SetupCORS(&w, r)
 		if (*r).Method == "OPTIONS" {
 			return
 		}

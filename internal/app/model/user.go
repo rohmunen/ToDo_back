@@ -17,10 +17,10 @@ type User struct {
 }
 
 type UserStore interface {
-	Create(u *User) error
-	FindById(id string) (*User, error)
+	Create(user *User) error
+	FindById(userId string) (*User, error)
 	FindByEmail(email string) (*User, error)
-	UpdatePassword(id string, password string) (*User, error)
+	UpdatePassword(userId string, password string) (*User, error)
 }
 
 func (u *User) Validate() error {

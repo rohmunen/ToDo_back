@@ -18,14 +18,14 @@ func NewUserStore(db *sqlx.DB) *UserStore {
 	}
 }
 
-func (u *UserStore) Create(user *model.User) error {
+func (s *UserStore) Create(user *model.User) error {
 	if err := user.Validate(); err != nil {
 		return err
 	}
 	if err := user.BeforeCreate(); err != nil {
 		return err
 	}
-	if err := u.QueryRowx(`INSERT INTO users (email, encrypted_password, name) VALUES ($1, $2, $3) RETURNING id`,
+	if err := s.QueryRowx(`INSERT INTO users (email, encrypted_password, name) VALUES ($1, $2, $3) RETURNING id`,
 		user.Email,
 		user.EncryptedPassword,
 		user.Name,
@@ -36,56 +36,56 @@ func (u *UserStore) Create(user *model.User) error {
 }
 
 func (s *UserStore) FindByEmail(email string) (*model.User, error) {
-	u := &model.User{}
+	user := &model.User{}
 	if err := s.DB.QueryRowx(`SELECT id, email, encrypted_password FROM users WHERE email = $1`,
 		email,
 	).Scan(
-		&u.Id,
-		&u.Email,
-		&u.EncryptedPassword,
+		&user.Id,
+		&user.Email,
+		&user.EncryptedPassword,
 	); err != nil {
 		return nil, fmt.Errorf("error finding user by email: %w", err)
 	}
-	return u, nil
+	return user, nil
 }
 
 func (s *UserStore) FindById(id string) (*model.User, error) {
-	u := &model.User{}
+	user := &model.User{}
 	if err := s.DB.QueryRowx(`SELECT id, email, encrypted_password FROM users WHERE id = $1`,
 		id,
 	).Scan(
-		&u.Id,
-		&u.Email,
-		&u.EncryptedPassword,
+		&user.Id,
+		&user.Email,
+		&user.EncryptedPassword,
 	); err != nil {
 		return nil, fmt.Errorf("error finding user by email: %w", err)
 	}
-	return u, nil
+	return user, nil
 }
 
 func (s *UserStore) UpdatePassword(id string, password string) (*model.User, error) {
-	u := &model.User{}
+	user := &model.User{}
 	if err := s.DB.QueryRowx(`SELECT id, email, encrypted_password FROM users WHERE id = $1`,
 		id,
 	).Scan(
-		&u.Id,
-		&u.Email,
-		&u.EncryptedPassword,
+		&user.Id,
+		&user.Email,
+		&user.EncryptedPassword,
 	); err != nil {
 		return nil, fmt.Errorf("error finding user by id: %w", err)
 	}
-	u.Password = password
-	u.BeforeCreate()
-	u.Sanitize()
+	user.Password = password
+	user.BeforeCreate()
+	user.Sanitize()
 	if err := s.DB.QueryRowx(`UPDATE users SET encrypted_password=$1 WHERE id = $2`,
-		u.EncryptedPassword,
-		u.Id,
+		user.EncryptedPassword,
+		user.Id,
 	).Scan(
-		&u.Id,
-		&u.Email,
-		&u.EncryptedPassword,
+		&user.Id,
+		&user.Email,
+		&user.EncryptedPassword,
 	); err != nil {
 		return nil, fmt.Errorf("error updating user: %w", err)
 	}
-	return u, nil
+	return user, nil
 }

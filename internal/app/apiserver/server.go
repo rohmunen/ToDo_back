@@ -5,7 +5,6 @@ import (
 	"testmod/internal/app/controllers"
 	"testmod/internal/app/store"
 	"testmod/pkg/auth"
-	"testmod/pkg/middleware"
 
 	"github.com/gorilla/mux"
 )
@@ -31,19 +30,22 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) configureRouter() {
-	s.router.HandleFunc("/user", controllers.HandleUserCreate(s.store, s.auth)).Methods("POST", "OPTIONS")
-	s.router.HandleFunc("/login", controllers.HandleLogin(s.store, s.auth)).Methods("POST", "OPTIONS")
-	s.router.HandleFunc("/recoverpw", controllers.HandlePasswordRecovery(s.store)).Methods("POST", "OPTIONS")
-	s.router.HandleFunc("/password/", controllers.HandleValidatePasswordRecovery(s.store)).Methods("POST", "OPTIONS")
-	s.router.HandleFunc("/changepw", middleware.CheckAuth(controllers.HandleChangePassword(s.store, s.auth), s.auth)).Methods("PUT", "OPTIONS")
-	s.router.HandleFunc("/todo", middleware.CheckAuth(controllers.HandleTodoCreate(s.store, s.auth), s.auth)).Methods("POST", "OPTIONS")
-	s.router.HandleFunc("/todo/{id}", middleware.CheckAuth(controllers.HandleTodoGet(s.store), s.auth)).Methods("GET", "OPTIONS")
-	s.router.HandleFunc("/todo/{id}", middleware.CheckAuth(controllers.HandleTodoDelete(s.store), s.auth)).Methods("DELETE", "OPTIONS")
-	s.router.HandleFunc("/todo/{id}", middleware.CheckAuth(controllers.HandleTodoPut(s.store), s.auth)).Methods("PUT", "OPTIONS")
-	s.router.HandleFunc("/todo/{id}", middleware.CheckAuth(controllers.HandleTodoCreatePublic(s.store), s.auth)).Methods("POST", "OPTIONS")
-	s.router.HandleFunc("/todos", middleware.CheckAuth(controllers.HandleTodos(s.store, s.auth), s.auth)).Methods("GET", "OPTIONS")
-	s.router.HandleFunc("/todo/public/{link}", controllers.HandleTodoGetPublic(s.store)).Methods("GET", "OPTIONS")
-	s.router.HandleFunc("/private/auth", middleware.CheckAuth(controllers.HandleAuth(), s.auth)).Methods("GET", "OPTIONS")
+	controllers.AddAuthenticationHandlers(s.router, s.store, s.auth)
+	controllers.AddTodoHandlers(s.router, s.store, s.auth)
+	controllers.AddUserHandlers(s.router, s.store, s.auth)
+	//s.router.HandleFunc("/user", middleware.SetupCORS(controllers.HandleUserCreate(s.store, s.auth))).Methods("POST", "OPTIONS")
+	//s.router.HandleFunc("/login", middleware.SetupCORS(controllers.HandleLogin(s.store, s.auth))).Methods("POST", "OPTIONS")
+	//s.router.HandleFunc("/recoverpw", middleware.SetupCORS(controllers.HandlePasswordRecovery(s.store))).Methods("POST", "OPTIONS")
+	//s.router.HandleFunc("/password/", middleware.SetupCORS(controllers.HandleValidatePasswordRecovery(s.store))).Methods("POST", "OPTIONS")
+	//s.router.HandleFunc("/changepw", middleware.SetupCORS(middleware.CheckAuth(controllers.HandleChangePassword(s.store, s.auth), s.auth))).Methods("PUT", "OPTIONS")
+	//s.router.HandleFunc("/todo", middleware.SetupCORS(middleware.CheckAuth(controllers.HandleTodoCreate(s.store, s.auth), s.auth))).Methods("POST", "OPTIONS")
+	//s.router.HandleFunc("/todo/{id}", middleware.SetupCORS(middleware.CheckAuth(controllers.HandleTodoGet(s.store), s.auth))).Methods("GET", "OPTIONS")
+	//s.router.HandleFunc("/todo/{id}", middleware.SetupCORS(middleware.CheckAuth(controllers.HandleTodoDelete(s.store), s.auth))).Methods("DELETE", "OPTIONS")
+	//s.router.HandleFunc("/todo/{id}", middleware.SetupCORS(middleware.CheckAuth(controllers.HandleTodoPut(s.store), s.auth))).Methods("PUT", "OPTIONS")
+	//s.router.HandleFunc("/todo/{id}", middleware.SetupCORS(middleware.CheckAuth(controllers.HandleTodoCreatePublic(s.store), s.auth))).Methods("POST", "OPTIONS")
+	//s.router.HandleFunc("/todos", middleware.SetupCORS(middleware.CheckAuth(controllers.HandleTodos(s.store, s.auth), s.auth))).Methods("GET", "OPTIONS")
+	//s.router.HandleFunc("/todo/public/{link}", middleware.SetupCORS(controllers.HandleTodoGetPublic(s.store))).Methods("GET", "OPTIONS")
+	//s.router.HandleFunc("/private/auth", middleware.SetupCORS(middleware.CheckAuth(controllers.HandleAuth(), s.auth))).Methods("GET", "OPTIONS")
 }
 
 /*

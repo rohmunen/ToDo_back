@@ -17,27 +17,27 @@ func NewRecoveryStore(db *sqlx.DB) *RecoveryStore {
 	}
 }
 
-func (s *RecoveryStore) Create(a *model.AccountRecovery) (string, error) {
-	if err := a.Validate(); err != nil {
+func (s *RecoveryStore) Create(verificationRow *model.VerificationRow) (string, error) {
+	if err := verificationRow.Validate(); err != nil {
 		return "", err
 	}
 	if err := s.QueryRowx(`INSERT INTO email_ver_hash (email, ver_hash, expiration) VALUES ($1, $2, $3) RETURNING id`,
-		a.Email,
-		a.Hash,
-		a.Expiration,
+		verificationRow.Email,
+		verificationRow.Hash,
+		verificationRow.Expiration,
 	).Scan(
-		&a.Id,
+		&verificationRow.Id,
 	); err != nil {
 		return "", err
 	}
-	return a.Id, nil
+	return verificationRow.Id, nil
 }
 
-func (s *RecoveryStore) Get(id string) (string, string, error) {
+func (s *RecoveryStore) Get(verificationId string) (string, string, error) {
 	var hash string
 	var email string
 	if err := s.QueryRowx(`SELECT ver_hash, email FROM email_ver_hash WHERE id = $1`,
-		id,
+		verificationId,
 	).Scan(&hash, &email); err != nil {
 		return "", "", err
 	}

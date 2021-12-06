@@ -7,7 +7,7 @@ import (
 	"github.com/go-ozzo/ozzo-validation/is"
 )
 
-type AccountRecovery struct {
+type VerificationRow struct {
 	Id         string    `json:"id" db:"id"`
 	Email      string    `json:"email" db:"email"`
 	Hash       string    `json:"hash" db:"ver_hash"`
@@ -15,11 +15,11 @@ type AccountRecovery struct {
 }
 
 type RecoveryStore interface {
-	Create(a *AccountRecovery) (string, error)
+	Create(a *VerificationRow) (string, error)
 	Get(id string) (string, string, error)
 }
 
-func (a *AccountRecovery) Validate() error {
+func (a *VerificationRow) Validate() error {
 	return validation.ValidateStruct(
 		a,
 		validation.Field(&a.Email, validation.Required, is.Email),

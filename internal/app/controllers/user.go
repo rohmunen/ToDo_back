@@ -7,9 +7,15 @@ import (
 	"testmod/internal/app/model"
 	"testmod/internal/app/store"
 	"testmod/pkg/auth"
+	"testmod/pkg/middleware"
 	"testmod/pkg/response"
-	"testmod/pkg/cors"
+
+	"github.com/gorilla/mux"
 )
+
+func AddUserHandlers(router *mux.Router, store *store.Store, auth *auth.Manager) {
+	router.HandleFunc("/api/registration", middleware.SetupCORS(HandleUserCreate(store, auth))).Methods("POST", "OPTIONS")
+}
 
 func HandleUserCreate(store *store.Store, auth *auth.Manager) http.HandlerFunc {
 	type jwtToken struct {
@@ -21,7 +27,7 @@ func HandleUserCreate(store *store.Store, auth *auth.Manager) http.HandlerFunc {
 		Name     string `json:"name"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		cors.SetupCORS(&w, r)
+		//cors.SetupCORS(&w, r)
 		if (*r).Method == "OPTIONS" {
 			return
 		}
