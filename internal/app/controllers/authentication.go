@@ -26,7 +26,6 @@ func AddAuthenticationHandlers(router *mux.Router, store *store.Store, auth *aut
 
 func HandleAuth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		//cors.SetupCORS(&w, r)
 		if (*r).Method == "OPTIONS" {
 			return
 		}
@@ -43,7 +42,6 @@ func HandleChangePassword(store *store.Store, auth *auth.Manager) http.HandlerFu
 		Token string `json:"token"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		//cors.SetupCORS(&w, r)
 		if (*r).Method == "OPTIONS" {
 			return
 		}
@@ -79,7 +77,6 @@ func HandlePasswordRecovery(store *store.Store) http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		//cors.SetupCORS(&w, r)
 		if (*r).Method == "OPTIONS" {
 			return
 		}
@@ -113,7 +110,6 @@ func HandleValidatePasswordRecovery(store *store.Store) http.HandlerFunc {
 		Password string `json:"password"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		//cors.SetupCORS(&w, r)
 		if (*r).Method == "OPTIONS" {
 			return
 		}
@@ -152,7 +148,6 @@ func HandleLogin(store *store.Store, auth *auth.Manager) http.HandlerFunc {
 		Password string `json:"password"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		//cors.SetupCORS(&w, r)
 		if (*r).Method == "OPTIONS" {
 			return
 		}

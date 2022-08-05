@@ -27,7 +27,6 @@ func HandleUserCreate(store *store.Store, auth *auth.Manager) http.HandlerFunc {
 		Name     string `json:"name"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		//cors.SetupCORS(&w, r)
 		if (*r).Method == "OPTIONS" {
 			return
 		}

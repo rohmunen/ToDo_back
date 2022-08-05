@@ -10,7 +10,6 @@ import (
 
 func CheckAuth(next http.HandlerFunc, auth *auth.Manager) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		//SetupCORS(&w, req)
 		if (*req).Method == "OPTIONS" {
 			return
 		}
